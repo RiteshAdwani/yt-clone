@@ -1,0 +1,15 @@
+.sidebar-and-body{
+  height: 90vh;
+}
+
+@media (max-width:876px){
+  .sidebar-and-body{
+    height: 93vh;
+  }
+}
+
+@media (max-width:576px){
+  .sidebar-and-body{
+    height: 95vh;
+  }
+}
