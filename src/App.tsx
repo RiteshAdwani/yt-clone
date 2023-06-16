@@ -1,15 +1,48 @@
-import React, { useState } from "react";
+import React, { ReactElement, useState } from "react";
 import { Container } from "react-bootstrap";
 import Sidebar from "./components/sidebar/Sidebar";
-import HomeScreen from "./screens/HomeScreen";
+import HomeScreen from "./screens/homeScreen/HomeScreen";
 import Header from "./components/header/Header";
+import LoginScreen from "./screens/loginScreen/LoginScreen";
 import "./app.css";
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import { Routes, Route, Outlet, Navigate } from "react-router-dom";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
-function App() {
-  const [darkMode, setDarkMode] = useState(false);
+type LayoutProps = {
+  children?: ReactElement;
+  darkMode: boolean;
+  toggleTheme: () => void;
+};
+
+const Layout = ({ darkMode, toggleTheme }: LayoutProps) => {
   const [sidebar, toggleSidebar] = useState(false);
+
+  const handleToggleSidebar = () => {
+    toggleSidebar((value) => !value);
+  };
+
+  return (
+    <>
+      <Header
+        toggleTheme={toggleTheme}
+        darkMode={darkMode}
+        handleToggleSidebar={handleToggleSidebar}
+      />
+      <div className="sidebar-and-body d-flex">
+        <Sidebar sidebar={sidebar} handleToggleSidebar={handleToggleSidebar} />
+        <Container fluid><Outlet/></Container>
+      </div>
+    </>
+  );
+};
+
+const App = () => {
+  const [darkMode, setDarkMode] = useState(false);
+
+  const toggleTheme = () => {
+    setDarkMode((prevDarkMode) => !prevDarkMode);
+  };
 
   const theme = createTheme({
     palette: {
@@ -17,26 +50,33 @@ function App() {
     },
   });
 
-  const toggleTheme = () => {
-    setDarkMode(!darkMode);
-  };
-
-  const handleToggleSidebar = () => {
-    toggleSidebar(value => !value)
-  }
-
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline/>
-      <Header toggleTheme={toggleTheme} darkMode={darkMode} handleToggleSidebar={ handleToggleSidebar} />
-      <div className="sidebar-and-body d-flex border border-warning">
-        <Sidebar sidebar={sidebar} />
-        <Container fluid>
-          <HomeScreen/>
-        </Container>
-      </div>
-    </ThemeProvider>
-  )
-}
+      <CssBaseline />
+      <>
+        <Routes>
+          <Route
+            path="/"
+            element={<Layout darkMode={darkMode} toggleTheme={toggleTheme} />}
+          >
+            <Route path="/" element={<HomeScreen />} />
+          </Route>
 
-export default App
+          <Route path="/auth" element={<LoginScreen />} />
+
+          <Route
+            path="/search"
+            element={<Layout darkMode={darkMode} toggleTheme={toggleTheme} />}
+          >
+            <Route path="/search" element={<h1>Search Results</h1>} />
+          </Route>
+
+          <Route path="/*" element={ <Navigate to="/"/>} />
+
+        </Routes>
+      </>
+    </ThemeProvider>
+  );
+};
+
+export default App;

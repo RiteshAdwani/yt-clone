@@ -14,12 +14,14 @@ import LibraryMusicOutlinedIcon from "@mui/icons-material/LibraryMusicOutlined";
 
 type SidebarProps = {
   sidebar: boolean;
+  handleToggleSidebar: (value : boolean) => void;
 };
 
-const Sidebar = ({sidebar} : SidebarProps) => {
+const Sidebar = ({sidebar, handleToggleSidebar} : SidebarProps) => {
   return (
     <nav
       className={`${styles.sidebar} p-2 ${sidebar ? styles.open : ""}`}
+      onClick = {() => handleToggleSidebar(false)}
     >
       {/* <Link to="/" className="logo-link text-decoration-none"> */}
       <div

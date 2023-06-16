@@ -1,0 +1,42 @@
+.video{
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.videoTop{
+  position: relative
+}
+
+.videoDetails{
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.videoTitle{
+  font-size: 18px;
+  overflow:hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.duration{
+  position: absolute;
+  bottom: 0.2rem;
+  right: 0.3rem;
+  padding: 0.2rem;
+  background: #0000008c;
+  border-radius: 3px;
+ color: rgb(235, 227, 227);
+}
+
+.channelName{
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.channelImg{
+  width: 30px;
+  height: 30px;
+}

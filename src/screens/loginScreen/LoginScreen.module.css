@@ -1,0 +1,25 @@
+.login{
+  height: 100vh;
+  display: grid;
+  place-items: center;
+}
+
+.loginContainer{
+  padding: 2rem;
+  margin: 0 1rem;
+  border: 1px solid rgba(128, 127, 127, 0.288);
+}
+
+.loginBtn{
+  background-color:rgba(253, 2, 2, 0.849);
+  color: white;
+  border-radius: 25px;
+  color: inherit;
+  border: 1px solid rgba(128, 127, 127, 0.288);
+}
+
+.logoImg{
+  height: 130px;
+  width: 130px;
+  object-fit: contain;
+}

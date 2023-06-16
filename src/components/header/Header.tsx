@@ -16,11 +16,11 @@ type HeaderProps = {
 const Header = ({ toggleTheme, darkMode, handleToggleSidebar }: HeaderProps) => {
   return (
     <div
-      className={`${styles.header} border border-info d-flex align-items-center justify-content-between`}
+      className={`${styles.header} d-flex align-items-center justify-content-between`}
     >
       <div className={styles.headerLogo}>
-        <MenuIcon role="button" onClick={handleToggleSidebar} className={ styles.menuIcon} />
-        <div className="d-flex align-items-center ms-4">
+        <MenuIcon role="button" onClick={handleToggleSidebar} className="d-block d-sm-none" />
+        <div className="d-flex align-items-center">
           <img src={logoImg} alt="logo" className={styles.logo} />
           <p className="pt-3">ViewTube</p>
         </div>
@@ -35,7 +35,7 @@ const Header = ({ toggleTheme, darkMode, handleToggleSidebar }: HeaderProps) => 
 
       <div className="d-flex justify-content-between align-items-center">
 
-      <div className="d-flex me-3" onClick={toggleTheme} role="button">
+      <div className="d-flex me-5" onClick={toggleTheme} role="button">
         <SettingsBrightnessOutlinedIcon />
         <p className={`${styles.darkModeText} ms-2 mb-0`}> {darkMode ? "Light" : "Dark"} Mode</p>
       </div>

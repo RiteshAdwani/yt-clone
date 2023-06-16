@@ -3,6 +3,7 @@
   height: 90vh;
   display: flex;
   flex-direction:column;
+  transition: transform 0.2s ease-in;
 }
 
 .sidebarItem{
@@ -36,10 +37,14 @@
 
 @media (max-width:576px){
   .sidebar{
-    display: none ;
+    height: 95vh;
+    transform: translateX(-100%);
+    position: fixed;
+    z-index: 999;
+    background-color: #121212;
   }
 
   .sidebar.open{
-    display: block;
+    transform: translateX(0);
   }
 }
