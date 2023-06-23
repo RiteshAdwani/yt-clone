@@ -1,15 +1,15 @@
 .sidebar-and-body{
-  height: 90vh;
+  margin-top:10vh;
 }
 
 @media (max-width:876px){
   .sidebar-and-body{
-    height: 93vh;
+    margin-top:7vh;
   }
 }
 
 @media (max-width:576px){
   .sidebar-and-body{
-    height: 95vh;
+    margin-top:5vh;
   }
 }

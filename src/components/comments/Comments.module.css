@@ -1,0 +1,32 @@
+.commentInput{
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: inherit;
+}
+
+.commentBtn{
+  background-color: #393d47;
+  border: none;
+  color: white;
+  outline: none;
+}
+
+.avatar{
+  height: 35px;
+  width: 35px;
+}
+
+@media(max-width: 768px){
+  .avatar{
+    height:30px;
+    width:30px;
+  }
+}
+
+@media(max-width: 576px){
+  .avatar{
+    height:25px;
+    width:25px;
+  }
+}

@@ -1,8 +1,8 @@
-import firebase from "firebase/app";
+import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAnm2bvsP8RXKJvOVPf0p0FRMp-W0RLmrU",
+  apiKey: "AIzaSyC1FgAgWDO_kBEUQkDBu9sQ0CTyrm8DCqs",
   authDomain: "viewtube-my-project.firebaseapp.com",
   projectId: "viewtube-my-project",
   storageBucket: "viewtube-my-project.appspot.com",
@@ -10,7 +10,7 @@ const firebaseConfig = {
   appId: "1:345460613181:web:d7c679d277a604b5a20a54"
 };
 
-const app = firebase.initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
 
-export default auth;
+export default app;

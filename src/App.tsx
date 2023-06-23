@@ -1,13 +1,16 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
 import Sidebar from "./components/sidebar/Sidebar";
 import HomeScreen from "./screens/homeScreen/HomeScreen";
 import Header from "./components/header/Header";
 import LoginScreen from "./screens/loginScreen/LoginScreen";
 import "./app.css";
-import { Routes, Route, Outlet, Navigate } from "react-router-dom";
+import { Routes, Route, Outlet, Navigate, useNavigate } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import { useSelector } from "react-redux";
+import { RootState } from "./redux/store/store";
+import WatchScreen from "./screens/watchScreen/WatchScreen";
 
 type LayoutProps = {
   children?: ReactElement;
@@ -29,7 +32,7 @@ const Layout = ({ darkMode, toggleTheme }: LayoutProps) => {
         darkMode={darkMode}
         handleToggleSidebar={handleToggleSidebar}
       />
-      <div className="sidebar-and-body d-flex">
+      <div className="sidebar-and-body d-flex pt-lg-2">
         <Sidebar sidebar={sidebar} handleToggleSidebar={handleToggleSidebar} />
         <Container fluid><Outlet/></Container>
       </div>
@@ -39,16 +42,25 @@ const Layout = ({ darkMode, toggleTheme }: LayoutProps) => {
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
+  const navigate = useNavigate();
 
   const toggleTheme = () => {
     setDarkMode((prevDarkMode) => !prevDarkMode);
   };
+
+  const {accessToken,loading} = useSelector((state:RootState) => state.auth)
 
   const theme = createTheme({
     palette: {
       mode: darkMode ? "dark" : "light",
     },
   });
+
+  useEffect(() => {
+    if (!loading && !accessToken) {
+      navigate("/auth");
+    }
+  },[accessToken,loading,navigate])
 
   return (
     <ThemeProvider theme={theme}>
@@ -69,6 +81,13 @@ const App = () => {
             element={<Layout darkMode={darkMode} toggleTheme={toggleTheme} />}
           >
             <Route path="/search" element={<h1>Search Results</h1>} />
+          </Route>
+
+          <Route
+            path="/watch/:id"
+            element={<Layout darkMode={darkMode} toggleTheme={toggleTheme} />}
+          >
+            <Route path="/watch/:id" element={<WatchScreen/>} />
           </Route>
 
           <Route path="/*" element={ <Navigate to="/"/>} />

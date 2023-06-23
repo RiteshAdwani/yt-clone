@@ -1,0 +1,17 @@
+.watchScreenPlayer{
+  height: 60vh;
+  background-color: #353946;
+  width: 100%;
+}
+
+@media (max-width:768px){
+  .watchScreenPlayer{
+    height: 50vh;
+  }
+}
+
+@media (max-width:576px){
+  .watchScreenPlayer{
+    height: 40vh;
+  }
+}

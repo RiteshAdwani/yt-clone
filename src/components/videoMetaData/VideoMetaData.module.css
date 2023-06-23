@@ -1,0 +1,41 @@
+.videoDetails span{ 
+  cursor: pointer;
+}
+
+button.subscribeBtn{
+  background-color: rgba(243, 10, 10, 0.938);
+  letter-spacing: 0.5px;
+  border: none;
+}
+
+button.subscribeBtn:hover{
+  background-color: red;
+}
+
+.videoDescription{
+  font-size: 0.9rem;
+  white-space: pre-line;
+}
+
+.showMoreText, .showLessText{
+  font-weight: 500;
+}
+
+.channelLogo{
+  height:50px;
+  width:50px;
+}
+
+@media(max-width: 768px){
+  .channelLogo{
+    height:40px;
+    width:40px;
+  }
+}
+
+@media(max-width: 576px){
+  .channelLogo{
+    height:30px;
+    width:30px;
+  }
+}

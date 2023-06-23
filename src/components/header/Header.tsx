@@ -5,6 +5,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import SettingsBrightnessOutlinedIcon from "@mui/icons-material/SettingsBrightnessOutlined";
 import logoImg from "../../assets/logo.svg";
 import defaultAvatarImg from "../../assets/avatar.png";
+import { useTheme } from "@mui/material";
 
 
 type HeaderProps = {
@@ -14,9 +15,12 @@ type HeaderProps = {
 };
 
 const Header = ({ toggleTheme, darkMode, handleToggleSidebar }: HeaderProps) => {
+  const theme = useTheme();
+  const mode = theme.palette.mode; 
+  
   return (
     <div
-      className={`${styles.header} d-flex align-items-center justify-content-between`}
+      className={`${styles.header} ${mode === "dark" ? styles.dark : styles.light} d-flex align-items-center justify-content-between`}
     >
       <div className={styles.headerLogo}>
         <MenuIcon role="button" onClick={handleToggleSidebar} className="d-block d-sm-none" />

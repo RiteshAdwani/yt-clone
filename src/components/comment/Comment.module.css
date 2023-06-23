@@ -1,0 +1,31 @@
+.comment{
+  font-size: 0.9rem;
+}
+
+.avatar{
+  height: 35px;
+  width: 35px;
+  object-fit: contain;
+}
+
+.userName{
+  font-weight: 500;
+}
+
+.commentText{
+  font-weight: 400;
+}
+
+@media(max-width: 768px){
+  .avatar{
+    height:30px;
+    width:30px;
+  }
+}
+
+@media(max-width: 576px){
+  .avatar{
+    height:25px;
+    width:25px;
+  }
+}

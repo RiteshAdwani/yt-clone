@@ -11,6 +11,11 @@ import SportsEsportsOutlinedIcon from "@mui/icons-material/SportsEsportsOutlined
 import MovieCreationOutlinedIcon from "@mui/icons-material/MovieCreationOutlined";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import LibraryMusicOutlinedIcon from "@mui/icons-material/LibraryMusicOutlined";
+import LogoutIcon from '@mui/icons-material/Logout';
+import { logout } from "../../redux/feature/authSlice";
+import { useAppDispatch } from "../../redux/store/store";
+import { useTheme } from "@mui/material";
+// import { useTheme } from "@mui/material";
 
 type SidebarProps = {
   sidebar: boolean;
@@ -18,9 +23,19 @@ type SidebarProps = {
 };
 
 const Sidebar = ({sidebar, handleToggleSidebar} : SidebarProps) => {
+  
+  const dispatch = useAppDispatch();
+  const handleLogout = () => {
+    dispatch(logout());
+    sessionStorage.removeItem("ytc-access-token");
+    sessionStorage.removeItem("ytc-user");
+  }
+  const theme = useTheme();
+  const mode = theme.palette.mode; 
+  
   return (
     <nav
-      className={`${styles.sidebar} p-2 ${sidebar ? styles.open : ""}`}
+      className={`${styles.sidebar} p-2 ${sidebar ? styles.open : ""} ${mode === "dark" ? styles.dark : styles.light}`}
       onClick = {() => handleToggleSidebar(false)}
     >
       {/* <Link to="/" className="logo-link text-decoration-none"> */}
@@ -83,6 +98,13 @@ const Sidebar = ({sidebar, handleToggleSidebar} : SidebarProps) => {
       <div className={`${styles.sidebarItem} mb-2 d-flex align-items-center`}>
         <ArticleOutlinedIcon className="pt-1" />
         <p className={`${styles.sidebarItemName} pt-1 ms-1 mb-0`}>News</p>
+      </div>
+
+      <hr className="m-0" />
+
+      <div className={`${styles.sidebarItem} mt-2 d-flex align-items-center`} role="button" onClick={handleLogout}>
+        <LogoutIcon className="pt-1" />
+        <p className={`${styles.sidebarItemName} pt-1 ms-1 mb-0`}>Logout</p>
       </div>
     </nav>
   );

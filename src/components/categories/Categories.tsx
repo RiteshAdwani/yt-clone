@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { getPopularVideos, getVideosByCategory } from "../../redux/feature/homeVideosSlice";
+import { useAppDispatch } from "../../redux/store/store";
 import styles from "./Categories.module.css";
 
 const Categories = () => {
@@ -20,8 +22,13 @@ const Categories = () => {
   ];
 
   const [activeElement, setActiveElement] = useState("All");
+  const dispatch = useAppDispatch();
   const handleClick = (value: string) => {
     setActiveElement(value);
+    if (value === "All")
+      dispatch(getPopularVideos());
+    else 
+      dispatch(getVideosByCategory(value));
   };
   
   return (
