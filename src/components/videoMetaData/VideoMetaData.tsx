@@ -1,35 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./VideoMetaData.module.css";
 import moment from "moment";
 import numeral from "numeral";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbDownOutlinedIcon from "@mui/icons-material/ThumbDownOutlined";
-import avatar from "../../assets/avatar.png";
-import { Video } from "../../redux/feature/homeVideosSlice";
+import { Video } from "../../redux/feature/videoSlice";
+import { RootState, useAppDispatch } from "../../redux/store/store";
+import { checkSubscriptionStatus, getChannelDetails } from "../../redux/feature/channelSlice";
+import { useSelector } from "react-redux";
 
 interface VideoMetaDataProps {
   selectedVideo: Video | null;
-  videoId: string | undefined;
+  videoId?: string;
 }
 
-const VideoMetaData = ({ selectedVideo, videoId } : VideoMetaDataProps) => {
+const VideoMetaData = ({ selectedVideo, videoId = "" }: VideoMetaDataProps) => {
   const [showFullDescription, setShowFullDescription] = useState(false);
-  const {channelId,channelTitle, description, title,publishedAt } = selectedVideo?.snippet || {};
-  const { viewCount, likeCount,dislikeCount } = selectedVideo?.statistics || {};
-  
+  const { channelId, channelTitle, description, title, publishedAt } =
+    selectedVideo?.snippet || {};
+  const { viewCount, likeCount, dislikeCount } =
+    selectedVideo?.statistics || {};
+  const channelDetails = useSelector(
+      (state: RootState) => state.channelDetails.channel
+  );
+
+  const subscriptionStatus = useSelector((state:RootState) => state.channelDetails.subscriptionStatus);
+  const dispatch = useAppDispatch();
+
   const toggleDescription = () => {
     setShowFullDescription((prevDescription) => !prevDescription);
   };
-  const videoDescription = description || "" ;
-    
+  const videoDescription = description || "";
+
   const truncatedDescription = showFullDescription
     ? videoDescription
     : videoDescription.substring(0, 100);
 
+  useEffect(() => {
+    if (channelId) {
+      dispatch(checkSubscriptionStatus(channelId))
+      dispatch(getChannelDetails(channelId));
+    }
+  }, [dispatch, channelId]);
+
   return (
     <div className={`${styles.videoMetaData} py-2`}>
       <div className={styles.videoDetails}>
-        <h5>{ title}</h5>
+        <h5>{title}</h5>
         <div className="d-flex justify-content-between align-items-center py-1">
           <span>
             {numeral(viewCount).format("0.a")} • {moment(publishedAt).fromNow()}
@@ -55,19 +72,19 @@ const VideoMetaData = ({ selectedVideo, videoId } : VideoMetaDataProps) => {
       >
         <div className="d-flex">
           <img
-            src={avatar}
+            src={channelDetails?.snippet?.thumbnails?.default?.url}
             alt="logo"
             className={`${styles.channelLogo} rounded-circle me-3`}
           />
           <div className="d-flex flex-column pt-1">
-            <span>{ channelTitle}</span>
-            <span>{numeral(10000).format("0.a")} Subscribers</span>
+            <span>{channelTitle}</span>
+            <span>{numeral(channelDetails?.statistics?.subscriberCount).format("0.a")} Subscribers</span>
           </div>
         </div>
         <button
-          className={`${styles.subscribeBtn} text-white rounded-5 px-3 py-1`}
+          className={`${styles.subscribeBtn} text-white rounded-5 px-3 py-1 ${subscriptionStatus ? styles.subscribedBtn : ""}`}
         >
-          Subscribe
+          {subscriptionStatus ? "Subscribed" : "Subscribe" }
         </button>
       </div>
 

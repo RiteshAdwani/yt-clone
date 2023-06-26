@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { getPopularVideos, getVideosByCategory } from "../../redux/feature/homeVideosSlice";
+import { getPopularVideos, getVideosByCategory } from "../../redux/feature/videoSlice";
 import { useAppDispatch } from "../../redux/store/store";
 import styles from "./Categories.module.css";
 

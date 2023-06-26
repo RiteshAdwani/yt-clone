@@ -1,11 +1,14 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import authReducer from '../feature/authSlice';
-import homeVideosReducer from "../feature/homeVideosSlice";
+import {homeVideosReducer,selectedVideoReducer} from "../feature/videoSlice";
+import { channelDetailsReducer } from '../feature/channelSlice';
 
 const rootReducer = {
   auth: authReducer,
   homeVideos: homeVideosReducer,
+  selectedVideo: selectedVideoReducer,
+  channelDetails: channelDetailsReducer,
   // Add other reducers here
 };
 

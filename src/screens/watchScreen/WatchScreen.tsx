@@ -5,14 +5,14 @@ import { useParams } from 'react-router-dom';
 import Comments from '../../components/comments/Comments';
 import RecommendedVideo from '../../components/recommendedVidep/RecommendedVideo';
 import VideoMetaData from '../../components/videoMetaData/VideoMetaData';
-import { getVideosById, HomeVideosState } from '../../redux/feature/homeVideosSlice';
+import { getVideosById, SelectedVideoState } from '../../redux/feature/videoSlice';
 import { useAppDispatch } from '../../redux/store/store';
 import styles from "./WatchScreen.module.css";
 
 const WatchScreen = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch();
-  const {selectedVideo,loading} = useSelector((state: { homeVideos: HomeVideosState })=> state.homeVideos)
+  const {selectedVideo,loading} = useSelector((state: { selectedVideo:SelectedVideoState })=> state.selectedVideo)
 
   useEffect(() => {
     if(id)

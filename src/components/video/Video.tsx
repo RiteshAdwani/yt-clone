@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Video.module.css";
-import { Video as VideoType } from "../../redux/feature/homeVideosSlice";
+import { Video as VideoType } from "../../redux/feature/videoSlice";
 import request from "../../api";
 import moment from "moment";
 import numeral from "numeral";

@@ -3,9 +3,9 @@ import { Col, Container } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import Categories from "../../components/categories/Categories";
 import Video from "../../components/video/Video";
-import { getPopularVideos, getVideosByCategory } from "../../redux/feature/homeVideosSlice";
+import { getPopularVideos, getVideosByCategory } from "../../redux/feature/videoSlice";
 import { useAppDispatch } from "../../redux/store/store";
-import { HomeVideosState } from "../../redux/feature/homeVideosSlice";
+import { HomeVideosState } from "../../redux/feature/videoSlice";
 import InfiniteScroll from "react-infinite-scroll-component";
 import VideoSkeleton from "../../components/skeleton/VideoSkeleton";
 
@@ -34,30 +34,29 @@ const HomeScreen = () => {
           next={fetchData}
           hasMore={true}
           loader={
-            <div className="spinner-border text-danger d-block mx-auto"></div>
+            loading ? (
+              <div className="spinner-border text-danger d-block mx-auto"></div>
+            ) : null
           }
           className="row"
         >
-          {!loading ? (
-            videos.map((video) => (
-              <Col
-                lg={3}
-                md={4}
-                key={
-                  typeof video.id === "string" ? video.id : video.id.videoId
-                }
-              >
-                <Video video={video} />
-              </Col>
-            ))
-          ) : (
-            [...Array(20)].map((_, index) => (
-              <Col lg={3} md={4} key={`skeleton-${index}`}>
-                <VideoSkeleton />
-              </Col>
-            ))
-          )}
+          {videos.map((video) => (
+            <Col
+              lg={3}
+              md={4}
+              key={
+                typeof video.id === "string" ? video.id : video.id.videoId
+              }
+            >
+              <Video video={video} />
+            </Col>
+          ))}
         </InfiniteScroll>
+        {loading && videos.length === 0 && (
+          <div className="text-center">
+            <VideoSkeleton />
+          </div>
+        )}
       </Container>
     </>
   );
