@@ -11,6 +11,8 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { useSelector } from "react-redux";
 import { RootState } from "./redux/store/store";
 import WatchScreen from "./screens/watchScreen/WatchScreen";
+import SearchScreen from "./screens/searchScreen/SearchScreen";
+import SubscriptionsScreen from "./screens/subscriptionsScreen/SubscriptionsScreen";
 
 type LayoutProps = {
   children?: ReactElement;
@@ -77,10 +79,10 @@ const App = () => {
           <Route path="/auth" element={<LoginScreen />} />
 
           <Route
-            path="/search"
+            path="/search/:query"
             element={<Layout darkMode={darkMode} toggleTheme={toggleTheme} />}
           >
-            <Route path="/search" element={<h1>Search Results</h1>} />
+            <Route path="/search/:query" element={<SearchScreen/>} />
           </Route>
 
           <Route
@@ -88,6 +90,13 @@ const App = () => {
             element={<Layout darkMode={darkMode} toggleTheme={toggleTheme} />}
           >
             <Route path="/watch/:id" element={<WatchScreen/>} />
+          </Route>
+
+          <Route
+            path="/feed/subscriptions"
+            element={<Layout darkMode={darkMode} toggleTheme={toggleTheme} />}
+          >
+            <Route path="/feed/subscriptions" element={<SubscriptionsScreen/>} />
           </Route>
 
           <Route path="/*" element={ <Navigate to="/"/>} />

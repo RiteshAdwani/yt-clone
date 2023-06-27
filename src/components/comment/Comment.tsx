@@ -1,20 +1,39 @@
-import React from 'react';
-import avatar from "../../assets/avatar.png";
-import moment from 'moment';
+import React from "react";
+// import avatar from "../../assets/avatar.png";
+import moment from "moment";
 import styles from "./Comment.module.css";
 
-const Comment = () => {
-  return (
-    <div className={`${styles.comment} d-flex`}>
-      <img src={avatar} alt="avatar" className={`${styles.avatar} rounded-circle me-3`}/>
-      <div>
-        <p className={`${styles.userName} mb-1`}>
-          Ritesh Adwani • {moment("2022-05-05").fromNow()}
-        </p>
-        <p className={styles.commentText}>The best finisher for a reason! Thala supremacy 💛 </p>
-      </div>
-    </div>
-  )
+interface CommentProps {
+  comment: {
+    authorDisplayName: string;
+    authorProfileImageUrl: string;
+    textDisplay: string;
+    publishedAt: string;
+  };
 }
 
-export default Comment
+const Comment = ({ comment }: CommentProps) => {
+  const {
+    authorDisplayName,
+    authorProfileImageUrl,
+    textDisplay,
+    publishedAt
+  } = comment;
+  return (
+    <div className={`${styles.comment} d-flex`}>
+      <img
+        src={authorProfileImageUrl}
+        alt="avatar"
+        className={`${styles.avatar} rounded-circle me-3`}
+      />
+      <div>
+        <p className={`${styles.userName} mb-1`}>
+          {authorDisplayName} • {moment(publishedAt).fromNow()}
+        </p>
+        <p className={styles.commentText}>{textDisplay}</p>
+      </div>
+    </div>
+  );
+};
+
+export default Comment;

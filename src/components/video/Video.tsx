@@ -27,7 +27,7 @@ const Video = ({ video }: { video: VideoType }) => {
   const [channelIcon, setChannelIcon] = useState<ChannelIcon | null>(null);
   const seconds = moment.duration(duration).asSeconds();
   const _duration = moment.utc(seconds * 1000).format("mm:ss");
-  const _videoId = typeof id === "string" ? id : id?.videoId;
+  const _videoId = typeof id === "string" ? id : "videoId" in id ? id.videoId : id.channelId;
   const navigate = useNavigate();
 
   const handleVideoClick = () => {
