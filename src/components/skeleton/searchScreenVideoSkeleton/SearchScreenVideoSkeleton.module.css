@@ -1,0 +1,26 @@
+.thumbnail{
+  width: 230px;
+  height: 130px;
+}
+
+.title,.description{
+  height: 20px;
+  width: 450px;
+}
+
+.stats{
+  width: 130px;
+  height: 13px;
+  margin-bottom: 20px;
+}
+
+.channelIcon{
+  width: 35px;
+  height: 35px;
+}
+
+.channelName{
+  height: 18px;
+  width: 90px;
+  margin-left: 10px;
+}

@@ -13,6 +13,8 @@ import { RootState } from "./redux/store/store";
 import WatchScreen from "./screens/watchScreen/WatchScreen";
 import SearchScreen from "./screens/searchScreen/SearchScreen";
 import SubscriptionsScreen from "./screens/subscriptionsScreen/SubscriptionsScreen";
+import ChannelScreen from "./screens/channelScreen/ChannelScreen";
+import LikedVideosScreen from "./screens/likedVideosScreen/LikedVideosScreen";
 
 type LayoutProps = {
   children?: ReactElement;
@@ -36,7 +38,9 @@ const Layout = ({ darkMode, toggleTheme }: LayoutProps) => {
       />
       <div className="sidebar-and-body d-flex pt-lg-2">
         <Sidebar sidebar={sidebar} handleToggleSidebar={handleToggleSidebar} />
-        <Container fluid><Outlet/></Container>
+        <Container fluid>
+          <Outlet />
+        </Container>
       </div>
     </>
   );
@@ -50,7 +54,9 @@ const App = () => {
     setDarkMode((prevDarkMode) => !prevDarkMode);
   };
 
-  const {accessToken,loading} = useSelector((state:RootState) => state.auth)
+  const { accessToken, loading } = useSelector(
+    (state: RootState) => state.auth
+  );
 
   const theme = createTheme({
     palette: {
@@ -62,7 +68,7 @@ const App = () => {
     if (!loading && !accessToken) {
       navigate("/auth");
     }
-  },[accessToken,loading,navigate])
+  }, [accessToken, loading, navigate]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -82,25 +88,44 @@ const App = () => {
             path="/search/:query"
             element={<Layout darkMode={darkMode} toggleTheme={toggleTheme} />}
           >
-            <Route path="/search/:query" element={<SearchScreen/>} />
+            <Route path="/search/:query" element={<SearchScreen />} />
           </Route>
 
           <Route
             path="/watch/:id"
             element={<Layout darkMode={darkMode} toggleTheme={toggleTheme} />}
           >
-            <Route path="/watch/:id" element={<WatchScreen/>} />
+            <Route path="/watch/:id" element={<WatchScreen />} />
           </Route>
 
           <Route
             path="/feed/subscriptions"
             element={<Layout darkMode={darkMode} toggleTheme={toggleTheme} />}
           >
-            <Route path="/feed/subscriptions" element={<SubscriptionsScreen/>} />
+            <Route
+              path="/feed/subscriptions"
+              element={<SubscriptionsScreen />}
+            />
           </Route>
 
-          <Route path="/*" element={ <Navigate to="/"/>} />
+          <Route
+            path="/channel/:channelId"
+            element={<Layout darkMode={darkMode} toggleTheme={toggleTheme} />}
+          >
+            <Route path="/channel/:channelId" element={<ChannelScreen />} />
+          </Route>
 
+          <Route
+            path="/feed/liked"
+            element={<Layout darkMode={darkMode} toggleTheme={toggleTheme} />}
+          >
+            <Route
+              path="/feed/liked"
+              element={<LikedVideosScreen />}
+            />
+          </Route>
+
+          <Route path="/*" element={<Navigate to="/" />} />
         </Routes>
       </>
     </ThemeProvider>

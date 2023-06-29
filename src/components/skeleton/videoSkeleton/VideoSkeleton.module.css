@@ -1,0 +1,49 @@
+.thumbnail{
+  height: 170px;
+  width: 250px;
+}
+
+.channelIcon{
+  width: 40px;
+  height: 40px;
+}
+
+.details{
+  height: 20px;
+  width: 205px;
+}
+
+@media (max-width:1200px){
+  .thumbnail{
+    width: 210px;
+    height: 140px;
+  }
+  
+  .details{
+    width: 160px;
+  }
+}
+
+@media (max-width:576px){
+  .thumbnail{
+    max-width: 540px;
+    width: 98%;
+  }
+  
+  .channelIcon{
+    width: 30px;
+    height: 30px;
+  }
+  
+  .details{
+    max-width: 510px;
+    height: 15px;
+    width: 80vw;
+  }
+}
+
+@media (max-width:362px){
+  .details{
+    width: 72vw;
+  }
+}

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Comments.module.css";
-import avatar from "../../assets/avatar.png";
 import Comment from "../comment/Comment";
 import { RootState, useAppDispatch } from "../../redux/store/store";
 import {
@@ -8,6 +7,7 @@ import {
   getCommentsOfVideoById,
 } from "../../redux/feature/commentSlice";
 import { useSelector } from "react-redux";
+import defaultAvatar from "../../assets/default-avatar.png"
 
 interface CommentsProps {
   videoId: string;
@@ -16,6 +16,7 @@ interface CommentsProps {
 
 const Comments = ({ videoId,totalComments }: CommentsProps) => {
   const dispatch = useAppDispatch();
+  const photoURL = useSelector((state: RootState) => state.auth?.user?.photoURL) || defaultAvatar;
 
   useEffect(() => {
     dispatch(getCommentsOfVideoById(videoId));
@@ -39,7 +40,7 @@ const Comments = ({ videoId,totalComments }: CommentsProps) => {
       <p>{totalComments} Comments</p>
       <div className="d-flex w-100 my-2">
         <img
-          src={avatar}
+          src={photoURL}
           alt="avatar"
           className={`${styles.avatar} rounded-circle me-3`}
         />

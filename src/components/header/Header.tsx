@@ -4,9 +4,10 @@ import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import SettingsBrightnessOutlinedIcon from "@mui/icons-material/SettingsBrightnessOutlined";
 import logoImg from "../../assets/logo.svg";
-import defaultAvatarImg from "../../assets/avatar.png";
 import { useTheme } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store/store";
 
 type HeaderProps = {
   toggleTheme: () => void;
@@ -23,11 +24,12 @@ const Header = ({
   const mode = theme.palette.mode;
   const [input, setInput] = useState<string>("");
   const navigate = useNavigate();
+  const photoURL = useSelector((state: RootState) => state.auth?.user?.photoURL);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (input) {
-      navigate(`search/${input}`);
+      navigate(`/search/${input}`);
     }
   };
   return (
@@ -73,7 +75,7 @@ const Header = ({
           </p>
         </div>
 
-        <img src={defaultAvatarImg} alt="avatar" className={styles.avatar} />
+        <img src={photoURL} alt="avatar" className={styles.avatar} />
       </div>
     </div>
   );

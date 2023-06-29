@@ -1,5 +1,5 @@
 import React from "react";
-// import avatar from "../../assets/avatar.png";
+import avatar from "../../assets/default-avatar.png";
 import moment from "moment";
 import styles from "./Comment.module.css";
 
@@ -22,7 +22,7 @@ const Comment = ({ comment }: CommentProps) => {
   return (
     <div className={`${styles.comment} d-flex`}>
       <img
-        src={authorProfileImageUrl}
+        src={authorProfileImageUrl ? authorProfileImageUrl : avatar}
         alt="avatar"
         className={`${styles.avatar} rounded-circle me-3`}
       />

@@ -1,34 +1,25 @@
 import React, { useEffect, useState } from "react";
 import styles from "./RecommendedVideo.module.css";
-// import request from "../../api";
 import moment from "moment";
 import numeral from "numeral";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-// import { Col, Row } from "react-bootstrap";
-// import thumbnail from "../../assets/thumbnail.jpg";
-import { Video as VideoType } from "../../redux/feature/videoSlice";
+import { Video as VideoType } from "../../utils/types";
 import request from "../../api";
 import { useNavigate } from "react-router-dom";
-
-// interface RecommendedVideoProps{
-//   video: {
-//     id: string;
-//     snippet: {
-//       channelId: string;
-//       channelTitle: string;
-//       description: string;
-//       title: string;
-//       publishedAt: string;
-//       thumbnails: string;
-//     }
-//   }
-// }
 
 interface ChannelIcon {
   url: string;
 }
 
-const RecommendedVideo = ({ video }: { video: VideoType }) => {
+const RecommendedVideo = ({
+  video,
+  searchScreen,
+  subscriptionsScreen,
+}: {
+  video: VideoType;
+  searchScreen?: boolean;
+  subscriptionsScreen?: boolean;
+}) => {
   const {
     id,
     snippet: {
@@ -38,13 +29,17 @@ const RecommendedVideo = ({ video }: { video: VideoType }) => {
       publishedAt,
       description,
       thumbnails: { medium },
+      resourceId,
     },
   } = video;
-  const isVideo = typeof id !== "string" && id?.kind === "youtube#video";
+  const isVideo =
+    typeof id !== "string" &&
+    !(id?.kind === "youtube#channel" || subscriptionsScreen);
   const [views, setViews] = useState(null);
   const [duration, setDuration] = useState(null);
   const [channelIcon, setChannelIcon] = useState<ChannelIcon | null>(null);
   const navigate = useNavigate();
+  const _channelId = resourceId?.channelId || channelId;
   useEffect(() => {
     const getVideoDetails = async () => {
       const {
@@ -63,8 +58,10 @@ const RecommendedVideo = ({ video }: { video: VideoType }) => {
       setDuration(items[0].contentDetails.duration);
       setViews(items[0].statistics.viewCount);
     };
-    getVideoDetails();
-  }, [id]);
+    {
+      isVideo && getVideoDetails();
+    }
+  }, [id, isVideo]);
 
   useEffect(() => {
     const getChannelIcon = async () => {
@@ -85,77 +82,71 @@ const RecommendedVideo = ({ video }: { video: VideoType }) => {
   const _duration = moment.utc(seconds * 1000).format("mm:ss");
 
   const handleClick = () => {
-    isVideo ? 
-    navigate(
-      `/watch/${
-        typeof id === "string" ? id : "videoId" in id ? id.videoId : ""
-      }`
-    ) : navigate(
-      `/channel/${
-      typeof id !== "string" && 
-        "channelId" in id ? id.channelId : "" 
-      }`
-    );
+    isVideo
+      ? navigate(
+          `/watch/${
+            typeof id === "string" ? id : "videoId" in id ? id.videoId : ""
+          }`
+        )
+      : navigate(`/channel/${_channelId}`);
   };
   return (
-    // <Row className='m-1 py-2 align-items-center d-flex'>
-    //   <Col xs={6} md={4}>
-    //     <LazyLoadImage src={thumbnail} effect="opacity" alt="Thumbnail" height="120px"/>
-    //     <span className={styles.duration}>{_duration}</span>
-    //   </Col>
-    //   <Col xs={6} md={8} className="p-0">
-    //     <p className='mb-1'>Be a full stack developer in one month</p>
-    //     <div>
-    //       {numeral(100000).format("0.a")} •
-    //       <span className="ps-1">{moment("2020-04-04").fromNow()}</span>
-    //     </div>
-    //     <div className='d-flex align-items-center my-1'>
-    //       {/* <LazyLoadImage src={thumbnail} effect="opacity" alt="Thumbnail" /> */}
-    //       <p>ICC</p>
-    //     </div>
-    //   </Col>
-    // </Row>
+    <>
+      <hr className="d-lg-none mb-4" />
+      <div
+        className={`d-flex ${!isVideo ? "flex-row" : ""} ${isVideo ? "flex-column flex-sm-row" : ""} gap-3 mb-4 px-2`}
+        onClick={handleClick}
+        role="button"
+      >
+        <div className={`${styles.videoWrapper} ${isVideo ? "styles.video" : ""}`}>
+          <LazyLoadImage
+            src={medium.url}
+            effect="opacity"
+            alt="Thumbnail"
+            width={isVideo ? "100%" : "50%" }
+            height="100%"
+            className={`${!isVideo ? styles.channel : "rounded-4"}`}
+          />
+          {isVideo && <span className={styles.duration}>{_duration}</span>}
+        </div>
 
-    <div
-      className="d-flex flex-column flex-sm-row gap-3 mb-4 align-items-center"
-      onClick={handleClick}
-      role="button"
-    >
-      <div className={styles.videoWrapper}>
-        <LazyLoadImage
-          src={medium.url}
-          effect="opacity"
-          alt="Thumbnail"
-          className={`${styles.video} ${!isVideo ? styles.channel : ""}`}
-        />
-        {isVideo &&
-          <span className={styles.duration}>{_duration}</span>}
-      </div>
-
-      <div>
-        <p className={`${styles.videoTitle} mb-2`}>{title}</p>
-        {isVideo && (
-          <div className={styles.videoDetails}>
-            {`${numeral(views).format("0.a")} views`} •
-            <span className={`ps-1`}>{moment(publishedAt).fromNow()}</span>
-          </div>
-        )}
-        {isVideo && <p className="mt-1">{description}</p>}
-
-        <div className="d-flex align-items-center my-1">
+        <div className="w-100 px-1">
+          <p className={`${styles.videoTitle} mb-1`}>{title}</p>
           {isVideo && (
-            <LazyLoadImage
-              src={channelIcon?.url}
-              effect="opacity"
-              alt="Thumbnail"
-              className="rounded-circle"
-              width={30}
-            />
+            <div className={styles.videoDetails}>
+              {`${numeral(views).format("0.a")} views`} •
+              <span className={`ps-1`}>{moment(publishedAt).fromNow()}</span>
+            </div>
           )}
-          <p className={`${styles.channelName} mb-0 ms-2`}>{channelTitle}</p>
+          {(searchScreen || subscriptionsScreen) && (
+            <p className="mt-1">
+              {subscriptionsScreen
+                ? description.substring(0, 150)
+                : description.substring(0, 100)}
+              ...
+            </p>
+          )}
+
+          <div className="d-flex align-items-center my-1">
+            {isVideo && (
+              <LazyLoadImage
+                src={channelIcon?.url}
+                effect="opacity"
+                alt="Thumbnail"
+                className="rounded-circle"
+                width={30}
+              />
+            )}
+            <p className={`${styles.channelName} mb-0 ms-2`}>{channelTitle}</p>
+          </div>
+          {subscriptionsScreen && (
+            <p className="mt-2">
+              {video?.contentDetails?.totalItemCount} Videos
+            </p>
+          )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

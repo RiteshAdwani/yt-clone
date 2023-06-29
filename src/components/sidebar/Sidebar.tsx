@@ -15,7 +15,6 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { logout } from "../../redux/feature/authSlice";
 import { useAppDispatch } from "../../redux/store/store";
 import { useTheme } from "@mui/material";
-// import { useTheme } from "@mui/material";
 
 type SidebarProps = {
   sidebar: boolean;
@@ -40,11 +39,10 @@ const Sidebar = ({ sidebar, handleToggleSidebar }: SidebarProps) => {
       onClick={() => handleToggleSidebar(false)}
     >
       <Link to="/" className={styles.sidebarLink}>
-      
-      <div className={`${styles.sidebarItem} mb-2 d-flex align-items-center`}>
-        <HomeIcon />
-        <p className={`${styles.sidebarItemName} pt-1 ms-2 mb-0`}>Home</p>
-      </div>
+        <div className={`${styles.sidebarItem} mb-2 d-flex align-items-center`}>
+          <HomeIcon />
+          <p className={`${styles.sidebarItemName} pt-1 ms-2 mb-0`}>Home</p>
+        </div>
       </Link>
 
       <Link to="/feed/subscriptions" className={styles.sidebarLink}>
@@ -57,12 +55,14 @@ const Sidebar = ({ sidebar, handleToggleSidebar }: SidebarProps) => {
         </div>
       </Link>
 
-      <div className={`${styles.sidebarItem} mb-2 d-flex align-items-center`}>
-        <ThumbUpOffAltIcon />
-        <p className={`${styles.sidebarItemName} pt-1 ms-1 mb-0`}>
-          Liked Videos
-        </p>
-      </div>
+      <Link to="/feed/liked" className={styles.sidebarLink}>
+        <div className={`${styles.sidebarItem} mb-2 d-flex align-items-center`}>
+          <ThumbUpOffAltIcon />
+          <p className={`${styles.sidebarItemName} pt-1 ms-1 mb-0`}>
+            Liked Videos
+          </p>
+        </div>
+      </Link>
 
       <hr className="m-0" />
 

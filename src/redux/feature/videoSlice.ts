@@ -1,74 +1,8 @@
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import request from "../../api";
+import { ChannelVideosState, HomeVideosState, LikedVideosState, RelatedVideosState, SearchVideosState, SelectedVideoState, Video } from "../../utils/types";
 import { RootState } from "../store/store";
 
-// Define the state interfaces for homeVideos and selectedVideo
-export interface HomeVideosState {
-  videos: Video[];
-  loading: boolean;
-  nextPageToken: string | null;
-  activeCategory: string;
-  error?: string;
-}
-
-export interface SearchVideosState {
-  videos: Video[];
-  loading: boolean;
-  error?: string;
-}
-
-
-export interface SelectedVideoState {
-  selectedVideo: Video | null;
-  loading: boolean;
-  error?: string;
-}
-
-export interface RelatedVideosState{
-  videos: Video[] | null;
-  loading: boolean;
-  error?: string;
-}
-
-export interface ChannelSubscriptionsState {
-  videos: Video[];
-  loading: boolean;
-  error?: string;
-}
-
-// Define the shared interface for Video
-export interface Video {
-  id: string | { videoId: string; kind: string } | { channelId: string;   kind:string};
-  snippet: {
-    channelId: string;
-    channelTitle: string;
-    title: string;
-    publishedAt: string;
-    description: string;
-    thumbnails: {
-      default:{
-        url:string;
-      }
-      medium: {
-        url: string;
-      };
-    };
-  };
-  statistics: {
-    viewCount: string;
-    likeCount: string;
-    dislikeCount: string;
-    subscriberCount: string;
-    commentCount: string;
-  };
-  contentDetails: {
-    videoId: string;
-  };
-  channelScreen?: boolean;
-}
-
-// Define the initial states for homeVideos and selectedVideo
 const initialHomeVideosState: HomeVideosState = {
   videos: [],
   loading: false,
@@ -84,20 +18,23 @@ const initialSelectedVideoState: SelectedVideoState = {
 const initialRelatedVideosState: RelatedVideosState = {
   videos: [],
   loading: true,
-}
+};
 
 const initialSearchVideosState: SearchVideosState = {
   videos: [],
   loading: false,
 };
 
-
-const initialChannelSubscriptionsState: ChannelSubscriptionsState = {
+const initialChannelVideosState: ChannelVideosState = {
   videos: [],
-  loading: false,
+  loading: true,
 };
 
-// Define separate async thunks for homeVideos and selectedVideo
+const initialLikedVideosState: LikedVideosState = {
+  videos: [],
+  loading: true,
+}
+
 export const getPopularVideos = createAsyncThunk(
   "homeVideos/getPopularVideos",
   async (_, { getState, dispatch }) => {
@@ -118,7 +55,7 @@ export const getPopularVideos = createAsyncThunk(
           nextPageToken: data.nextPageToken,
           category: "All",
         })
-      );    
+      );
     } catch (error) {
       console.log(error);
       dispatch(homeVideosFail((error as Error).message));
@@ -184,11 +121,11 @@ export const getRelatedVideos = createAsyncThunk(
           part: "snippet",
           relatedToVideoId: id,
           maxResults: 15,
-          type:"video"
+          type: "video",
         },
       });
       dispatch(relatedVideosSuccess(data.items));
-    } catch (error:any) {
+    } catch (error: any) {
       console.log(error.response.data.message);
       dispatch(relatedVideosFail(error.response.data.message));
     }
@@ -208,11 +145,9 @@ export const getVideosBySearch = createAsyncThunk(
           type: "video,channel",
         },
       });
-      console.log(data)
+      console.log(data);
 
-      dispatch(
-        searchVideosSuccess(data.items)
-      );
+      dispatch(searchVideosSuccess(data.items));
     } catch (error) {
       console.log(error);
       dispatch(searchVideosFail((error as Error).message));
@@ -222,29 +157,59 @@ export const getVideosBySearch = createAsyncThunk(
 
 export const getVideosByChannel = createAsyncThunk(
   "channelVideos/getVideosByChannel",
-  async (_, { dispatch, getState }) => {
+  async (id: string, { dispatch }) => {
     try {
-      dispatch(channelSubscriptionsRequest());
-      const { data } = await request("/subscriptions", {
+      dispatch(channelVideosRequest());
+      const {
+        data: { items },
+      } = await request("/channels", {
         params: {
-          part: "snippet,contentDetails",
-          mine: true,
+          part: "contentDetails",
+          id: id,
+        },
+      });
+      const uploadPlaylistId = items[0].contentDetails.relatedPlaylists.uploads;
+
+      const { data } = await request("/playlistItems", {
+        params: {
+          part: "contentDetails,snippet",
+          playlistId: uploadPlaylistId,
+          maxResults: 30,
+        },
+      });
+      dispatch(channelVideosSuccess(data.items));
+    } catch (error: any) {
+      console.log(error.response.data.message);
+      dispatch(channelVideosFail(error.response.data));
+    }
+  }
+);
+
+export const getLikedVideos = createAsyncThunk(
+  "likedVideos/getLikedVideos",
+  async (_, { dispatch,getState }) => {
+    try {
+      dispatch(likedVideosRequest());
+      const { data } = await request("/videos", {
+        params: {
+          part: "snippet,contentDetails,statistics",
+          maxResults: 20,
+          type: "video",
+          myRating:"like"
         },
         headers: {
           Authorization: `Bearer ${(getState() as RootState).auth.accessToken}`,
         },
       });
-      
-      dispatch(channelSubscriptionsSuccess(data.items));
+      dispatch(likedVideosSuccess(data.items));
+      console.log(data.items);
     } catch (error: any) {
-      console.log(error.response.data);
-      const accessToken = (getState() as RootState).auth.accessToken;
-      console.log(accessToken)
-      dispatch(channelSubscriptionsFail(error.response.data));
+      console.log(error.response.data.message);
+      dispatch(likedVideosFail(error.response.data.message));
     }
   }
 );
-// Create separate slices for homeVideos and selectedVideo
+
 const homeVideosSlice = createSlice({
   name: "homeVideos",
   initialState: initialHomeVideosState,
@@ -257,7 +222,11 @@ const homeVideosSlice = createSlice({
       const { videos, nextPageToken, category } = action.payload;
       if (state.activeCategory === category) {
         const existingVideoIds = state.videos.map((video) =>
-          typeof video.id === "string" ? video.id : "videoId" in video.id? video.id.videoId : video.id.channelId
+          typeof video.id === "string"
+            ? video.id
+            : "videoId" in video.id
+            ? video.id.videoId
+            : video.id.channelId
         );
         const newVideos = videos.filter((video: Video) => {
           if (typeof video.id === "string") {
@@ -270,7 +239,7 @@ const homeVideosSlice = createSlice({
             }
           }
         });
-        
+
         state.videos.push(...newVideos);
       } else {
         state.videos = videos;
@@ -279,7 +248,7 @@ const homeVideosSlice = createSlice({
       state.loading = false;
       state.nextPageToken = nextPageToken;
     },
-    
+
     homeVideosFail: (state, action) => {
       state.loading = false;
       state.error = action.payload;
@@ -331,72 +300,78 @@ const searchVideosSlice = createSlice({
     searchVideosRequest: (state) => {
       state.loading = true;
     },
-    searchVideosSuccess: (state,action) => {
+    searchVideosSuccess: (state, action) => {
       state.loading = false;
       state.videos = action.payload;
-      console.log(state.videos.length)
+      console.log(state.videos.length);
     },
-    searchVideosFail: (state,action) => {
+    searchVideosFail: (state, action) => {
       state.error = action.payload;
       state.loading = false;
-    }
-  } 
-})
+    },
+  },
+});
 
-const channelSubscriptionsSlice = createSlice({
-  name: "channelSubscriptions",
-  initialState: initialChannelSubscriptionsState,
+const channelVideosSlice = createSlice({
+  name: "channelVideos",
+  initialState: initialChannelVideosState,
   reducers: {
-    channelSubscriptionsRequest: (state) => {
+    channelVideosRequest: (state) => {
       state.loading = true;
     },
-    channelSubscriptionsSuccess: (state,action) => {
+    channelVideosSuccess: (state, action) => {
       state.loading = false;
       state.videos = action.payload;
     },
-    channelSubscriptionsFail: (state,action) => {
+    channelVideosFail: (state, action) => {
       state.error = action.payload;
       state.loading = false;
-    }
-  } 
-})
+    },
+  },
+});
 
-// Extract the actions and reducer for each slice
-export const {
-  homeVideosRequest,
-  homeVideosSuccess,
-  homeVideosFail,
-} = homeVideosSlice.actions;
+const likedVideosSlice = createSlice({
+  name: "likedVideos",
+  initialState: initialLikedVideosState,
+  reducers: {
+    likedVideosRequest: (state) => {
+      state.loading = true;
+    },
+    likedVideosSuccess: (state, action) => {
+      state.loading = false;
+      state.videos = action.payload;
+    },
+    likedVideosFail: (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    },
+  },
+});
 
-export const {
-  selectedVideoRequest,
-  selectedVideoSuccess,
-  selectedVideoFail,
-} = selectedVideoSlice.actions;
+export const { homeVideosRequest, homeVideosSuccess, homeVideosFail } =
+  homeVideosSlice.actions;
 
-export const {
-  relatedVideosRequest,
-  relatedVideosSuccess,
-  relatedVideosFail
-} = relatedVideosSlice.actions;
+export const { selectedVideoRequest, selectedVideoSuccess, selectedVideoFail } =
+  selectedVideoSlice.actions;
 
-export const {
-  searchVideosRequest,
-  searchVideosSuccess,
-  searchVideosFail
-} = searchVideosSlice.actions;
+export const { relatedVideosRequest, relatedVideosSuccess, relatedVideosFail } =
+  relatedVideosSlice.actions;
 
-export const {
-  channelSubscriptionsRequest,
-  channelSubscriptionsSuccess,
-  channelSubscriptionsFail
-} = channelSubscriptionsSlice.actions;
+export const { searchVideosRequest, searchVideosSuccess, searchVideosFail } =
+  searchVideosSlice.actions;
+
+export const { channelVideosRequest, channelVideosSuccess, channelVideosFail } =
+  channelVideosSlice.actions;
+
+export const { likedVideosRequest, likedVideosSuccess, likedVideosFail } =
+  likedVideosSlice.actions;
 
 export const homeVideosReducer = homeVideosSlice.reducer;
 export const selectedVideoReducer = selectedVideoSlice.reducer;
 export const relatedVideosReducer = relatedVideosSlice.reducer;
 export const searchVideosReducer = searchVideosSlice.reducer;
-export const channelSubscriptionsReducer = channelSubscriptionsSlice.reducer;
+export const channelVideosReducer = channelVideosSlice.reducer;
+export const likedVideosReducer = likedVideosSlice.reducer;
 
 
 export default {
@@ -404,5 +379,6 @@ export default {
   selectedVideo: selectedVideoReducer,
   relatedVideos: relatedVideosReducer,
   searchVideos: searchVideosReducer,
-  channelSubscriptions: channelSubscriptionsReducer
+  channelVideos: channelVideosReducer,
+  likedVideos: likedVideosReducer,
 };

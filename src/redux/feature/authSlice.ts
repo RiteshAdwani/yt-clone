@@ -1,83 +1,58 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { RootState } from '../store/store';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import {auth} from '../../firebase';
-// import firebase from "firebase/app"; 
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { RootState } from "../store/store";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth } from "../../firebase";
+import { AuthState,User } from "../../utils/types";
 
-interface User {
-  name: string;
-  photoURL: string;
-}
-
-interface AuthState {
-  accessToken: string | null;
-  user: User | null;
-  loading: boolean;
-  error?: string;
-}
-
-const accessToken = sessionStorage.getItem('ytc-access-token');
-const userString = sessionStorage.getItem('ytc-user');
+const accessToken = sessionStorage.getItem("ytc-access-token");
+const userString = sessionStorage.getItem("ytc-user");
 const user = userString ? JSON.parse(userString) : null;
 
 const initialState: AuthState = {
-  accessToken: accessToken || null,
-  user: user,
+  accessToken:accessToken || null,
+  user:user || null,
   loading: false,
 };
 
+export const login = createAsyncThunk("auth/login", async (_, { dispatch }) => {
+  try {
+    const provider = new GoogleAuthProvider();
+    provider.addScope("https://www.googleapis.com/auth/youtube.force-ssl");
 
-// const initialState: AuthState = {
-//   accessToken: sessionStorage.getItem('ytc-access-token') || null,
-//   user: sessionStorage.getItem('ytc-user')
-//     ? JSON.parse(sessionStorage.getItem('ytc-user')!)
-//     : null,
-//   loading: false,
-// };
+    const res = await signInWithPopup(auth, provider);
+    console.log(res);
 
-export const login = createAsyncThunk(
-  'auth/login',
-  async ( _,{dispatch} ) => {
-    try {
-      const provider = new GoogleAuthProvider();
-      provider.addScope('https://www.googleapis.com/auth/youtube.force-ssl');
+    const credential = GoogleAuthProvider.credentialFromResult(res);
+    console.log(credential)
 
-      const res = await signInWithPopup(auth, provider);
-      console.log(res);
-      
-      const credential = GoogleAuthProvider.credentialFromResult(res);
+    if (credential && credential.accessToken) {
+      const profile: User = {
+        name: res.user?.displayName || "",
+        photoURL: res.user?.photoURL || "",
+      };
 
-      if (credential && credential.accessToken) {
-        const profile: User = {
-          name: res.user?.displayName || '',
-          photoURL: res.user?.photoURL || '',
-        };
+      sessionStorage.setItem("ytc-access-token", credential?.accessToken);
+      sessionStorage.setItem("ytc-user", JSON.stringify(profile));
 
-        sessionStorage.setItem('ytc-access-token', credential.accessToken);
-        sessionStorage.setItem('ytc-user', JSON.stringify(profile));
-
-        dispatch(loginSuccess(credential.accessToken));
-        dispatch(loadProfile(profile));
-      }
-    } catch (error) {
-      console.log((error as Error).message);
-      dispatch(loginFail((error as Error).message));
+      dispatch(loginSuccess(credential.accessToken));
+      dispatch(loadProfile(profile));
     }
+  } catch (error) {
+    console.log((error as Error).message);
+    dispatch(loginFail((error as Error).message));
   }
-);
+});
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     loginRequest: (state) => {
       state.loading = true;
-      state.error = undefined;
     },
     loginSuccess: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
       state.loading = false;
-      state.error = undefined;
     },
     loginFail: (state, action: PayloadAction<string>) => {
       state.accessToken = null;
@@ -100,13 +75,8 @@ const authSlice = createSlice({
   },
 });
 
-export const {
-  loginRequest,
-  loginSuccess,
-  loginFail,
-  loadProfile,
-  logout,
-} = authSlice.actions;
+export const { loginRequest, loginSuccess, loginFail, loadProfile, logout } =
+  authSlice.actions;
 
 export default authSlice.reducer;
 

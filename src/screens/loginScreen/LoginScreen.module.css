@@ -2,12 +2,15 @@
   height: 100vh;
   display: grid;
   place-items: center;
+  margin: 0 auto;
+  max-width: 1400px;
 }
 
 .loginContainer{
   padding: 2rem;
   margin: 0 1rem;
   border: 1px solid rgba(128, 127, 127, 0.288);
+  
 }
 
 .loginBtn{

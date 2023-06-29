@@ -57,6 +57,7 @@ box-shadow: 0px 5px 4px -4px rgba(242,242,242,1);
 .avatar{
   height: 45px;
   width: 45px;
+  border-radius: 50%;
 }
 
 .headerLink{
